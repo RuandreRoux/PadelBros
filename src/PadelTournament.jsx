@@ -280,9 +280,13 @@ export default function PadelTournament() {
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => setEditNames(!editNames)}
-                className="flex-1 px-4 py-3 bg-cyan-500/10 active:bg-cyan-500/25 border border-cyan-500/30 rounded-xl text-cyan-300 font-semibold text-sm transition-colors"
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-colors ${
+                  editNames
+                    ? 'bg-cyan-400 active:bg-cyan-300 text-white shadow-lg shadow-cyan-500/40'
+                    : 'bg-cyan-500/10 active:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300'
+                }`}
               >
-                {editNames ? 'Done' : 'Edit Names'}
+                {editNames ? <><Check size={15} /> Done — Save Names</> : 'Edit Names'}
               </button>
               <button
                 onClick={shareToWhatsApp}
