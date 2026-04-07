@@ -184,15 +184,22 @@ export default function PadelTournament() {
 
   return (
     <div
-      className="min-h-screen pb-8"
+      className="min-h-screen"
       style={{
         background: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)',
         fontFamily: "'Outfit', sans-serif",
+        paddingBottom: 'calc(2rem + env(safe-area-inset-bottom))',
       }}
     >
       {/* Header */}
-      <div className="border-b border-cyan-500/30 backdrop-blur-sm sticky top-0 z-10">
-        <div className="px-4 py-4 sm:px-6 sm:py-6">
+      <div
+        className="border-b border-cyan-500/30 sticky top-0 z-10"
+        style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)' }}
+      >
+        <div
+          className="px-4 py-3 sm:px-6 sm:py-5"
+          style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
+        >
           <div className="flex justify-between items-center gap-4">
             <div className="flex-1">
               <h1
@@ -201,40 +208,41 @@ export default function PadelTournament() {
               >
                 PADEL
               </h1>
-              <p className="text-cyan-300/60 text-xs sm:text-sm mt-1">Tournament Tracker</p>
+              <p className="text-cyan-300/60 text-xs mt-0.5">Tournament Tracker</p>
             </div>
             <button
               onClick={handleResetClick}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-red-500/30 hover:bg-red-500/50 border border-red-500/50 rounded-lg text-red-300 font-bold text-sm transition-all"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2.5 bg-red-500/30 active:bg-red-500/60 border border-red-500/50 rounded-lg text-red-300 font-bold text-sm transition-colors"
             >
-              <RotateCcw size={18} className="flex-shrink-0" />
+              <RotateCcw size={17} className="flex-shrink-0" />
               <span className="hidden sm:inline">RESET</span>
             </button>
           </div>
         </div>
       </div>
 
-      <div className="px-4 sm:px-6 py-6 sm:py-8 max-w-4xl mx-auto">
-        <div className="flex flex-col gap-6">
+      <div className="px-4 sm:px-6 py-5 sm:py-8 max-w-4xl mx-auto">
+        <div className="flex flex-col gap-5">
+
           {/* Leaderboard */}
-          <div className="bg-white/5 backdrop-blur-md border border-cyan-500/20 rounded-2xl p-4 sm:p-6">
-            <h2 className="text-lg font-bold text-cyan-300 mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 bg-cyan-400 rounded-full"></span>
+          <div className="bg-white/5 border border-cyan-500/20 rounded-2xl p-4 sm:p-6">
+            <h2 className="text-base font-bold text-cyan-300 mb-3 flex items-center gap-2">
+              <span className="w-2 h-2 bg-cyan-400 rounded-full flex-shrink-0"></span>
               Leaderboard
             </h2>
             <div className="space-y-2">
               {sortedPlayers.map((player, idx) => (
                 <div
                   key={player.id}
-                  className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-cyan-500/10"
+                  className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-cyan-500/10"
                 >
-                  <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-                    <span className="text-cyan-400 font-black text-sm w-5 flex-shrink-0">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <span className="text-cyan-400 font-black text-sm w-5 flex-shrink-0 text-center">
                       {idx + 1}
                     </span>
                     <p className="text-white font-semibold text-sm truncate">{player.name}</p>
                   </div>
-                  <span className="bg-cyan-500/20 border border-cyan-500/50 px-2 sm:px-3 py-1 rounded-full text-cyan-300 font-bold text-xs">
+                  <span className="bg-cyan-500/20 border border-cyan-500/40 px-3 py-1 rounded-full text-cyan-300 font-bold text-xs flex-shrink-0 ml-2">
                     {player.points}pts
                   </span>
                 </div>
@@ -242,63 +250,65 @@ export default function PadelTournament() {
             </div>
             <button
               onClick={() => setEditNames(!editNames)}
-              className="w-full mt-4 px-4 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 rounded-lg text-cyan-300 font-semibold text-sm transition-all"
+              className="w-full mt-3 px-4 py-3 bg-cyan-500/10 active:bg-cyan-500/25 border border-cyan-500/30 rounded-xl text-cyan-300 font-semibold text-sm transition-colors"
             >
-              {editNames ? 'Done Editing' : 'Edit Names'}
+              {editNames ? 'Done Editing' : 'Edit Player Names'}
             </button>
             {editNames && (
-              <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
+              <div className="mt-3 space-y-2">
                 {players.map((player) => (
                   <input
                     key={player.id}
                     type="text"
                     value={player.name}
                     onChange={(e) => editPlayerName(player.id, e.target.value)}
-                    className="w-full px-3 py-2 bg-white/10 border border-cyan-500/30 rounded-lg text-white text-sm outline-none focus:border-cyan-400"
+                    className="w-full px-3 py-3 bg-white/10 border border-cyan-500/30 rounded-xl text-white text-base outline-none focus:border-cyan-400"
                   />
                 ))}
               </div>
             )}
           </div>
 
-          {/* Matches */}
+          {/* Matches section */}
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+
+            {/* Round header + action buttons */}
+            <div className="flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-2xl sm:text-3xl font-black text-white">Round {round}</h2>
+                <h2 className="text-2xl font-black text-white">Round {round}</h2>
                 {matchHistory.length > 0 && (
-                  <p className="text-cyan-300/60 text-xs sm:text-sm mt-1">
+                  <p className="text-cyan-300/50 text-xs mt-0.5">
                     {matchHistory.length} match{matchHistory.length !== 1 ? 'es' : ''} played
                   </p>
                 )}
               </div>
-              <div className="flex w-full sm:w-auto gap-2">
-                {/* Schedule toggle button */}
+              <div className="flex gap-2 flex-shrink-0">
+                {/* Schedule toggle */}
                 <button
                   onClick={() => setScheduleOpen((o) => !o)}
-                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all border ${
+                  className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl font-bold text-sm transition-colors border ${
                     scheduleOpen
                       ? 'bg-cyan-500/25 border-cyan-400/60 text-cyan-200'
-                      : 'bg-white/5 border-cyan-500/30 text-cyan-300 hover:bg-white/10'
+                      : 'bg-white/5 border-cyan-500/30 text-cyan-300 active:bg-white/15'
                   }`}
                 >
                   <CalendarDays size={16} />
-                  <span>Schedule</span>
+                  <span className="hidden xs:inline">Schedule</span>
                   {scheduleOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </button>
 
                 {matches.length === 0 ? (
                   <button
                     onClick={generateMatches}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 rounded-xl text-white font-bold text-sm transition-all shadow-lg shadow-cyan-500/30"
+                    className="flex items-center gap-1.5 px-4 py-2.5 bg-cyan-500 active:bg-cyan-400 rounded-xl text-white font-bold text-sm transition-colors shadow-lg shadow-cyan-500/30"
                   >
-                    <Play size={18} />
-                    Generate Matches
+                    <Play size={16} />
+                    Generate
                   </button>
                 ) : allCompleted ? (
                   <button
                     onClick={finishRound}
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-400 rounded-xl text-white font-bold text-sm transition-all shadow-lg shadow-green-500/30"
+                    className="flex items-center gap-1.5 px-4 py-2.5 bg-green-500 active:bg-green-400 rounded-xl text-white font-bold text-sm transition-colors shadow-lg shadow-green-500/30"
                   >
                     Next Round
                   </button>
@@ -308,15 +318,15 @@ export default function PadelTournament() {
 
             {/* Schedule dropdown panel */}
             {scheduleOpen && (
-              <div className="bg-white/5 backdrop-blur-md border border-cyan-500/20 rounded-2xl p-4 sm:p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-cyan-300 flex items-center gap-2">
-                    <span className="w-2 h-2 bg-cyan-400 rounded-full"></span>
+              <div className="bg-white/5 border border-cyan-500/20 rounded-2xl p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-base font-bold text-cyan-300 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-cyan-400 rounded-full flex-shrink-0"></span>
                     Full Match Schedule
                   </h3>
-                  <span className="text-xs text-cyan-300/50">14 rounds · all pairs covered</span>
+                  <span className="text-[11px] text-cyan-300/50">14 rounds</span>
                 </div>
-                <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+                <div className="space-y-2 max-h-[55vh] overflow-y-auto">
                   {FULL_SCHEDULE.map((roundMatches, idx) => {
                     const roundNum = idx + 1;
                     const isCompleted = roundNum <= round;
@@ -325,49 +335,43 @@ export default function PadelTournament() {
                     return (
                       <div
                         key={idx}
-                        className={`rounded-xl border p-3 transition-all ${
+                        className={`rounded-xl border p-3 ${
                           isCompleted
-                            ? 'bg-white/3 border-cyan-500/10 opacity-40'
+                            ? 'border-cyan-500/10 opacity-35'
                             : isNext
                             ? 'bg-cyan-500/15 border-cyan-400/50'
                             : 'bg-white/5 border-cyan-500/10'
                         }`}
                       >
-                        <div className="flex items-center gap-2 mb-2">
-                          <span
-                            className={`text-xs font-bold ${
-                              isNext ? 'text-cyan-300' : isCompleted ? 'text-cyan-300/40' : 'text-cyan-300/70'
-                            }`}
-                          >
+                        {/* Round label */}
+                        <div className="flex items-center gap-2 mb-2.5">
+                          <span className={`text-xs font-bold ${isNext ? 'text-cyan-300' : 'text-cyan-300/50'}`}>
                             Round {roundNum}
                           </span>
                           {isNext && (
-                            <span className="text-[10px] px-2 py-0.5 bg-cyan-400/20 border border-cyan-400/40 rounded-full text-cyan-300 font-bold tracking-wide">
+                            <span className="text-[10px] px-2 py-0.5 bg-cyan-400/20 border border-cyan-400/40 rounded-full text-cyan-300 font-bold">
                               NEXT UP
                             </span>
                           )}
-                          {isCompleted && (
-                            <span className="text-[10px] text-cyan-300/30">done</span>
-                          )}
+                          {isCompleted && <span className="text-[10px] text-cyan-300/30">done</span>}
                         </div>
-                        <div className="space-y-1.5">
+
+                        {/* Two matches, each stacked vertically */}
+                        <div className="grid grid-cols-2 gap-2">
                           {roundMatches.map((match, mIdx) => (
-                            <div key={mIdx} className="flex items-center gap-2 text-sm">
-                              <span
-                                className={`font-semibold ${
-                                  isCompleted ? 'text-white/30' : isNext ? 'text-white' : 'text-white/70'
-                                }`}
-                              >
+                            <div
+                              key={mIdx}
+                              className={`rounded-lg p-2 ${
+                                isNext ? 'bg-white/10' : 'bg-white/5'
+                              }`}
+                            >
+                              <p className={`text-xs font-semibold leading-tight truncate ${isCompleted ? 'text-white/30' : 'text-white/90'}`}>
                                 {match.team1.map(getName).join(' & ')}
-                              </span>
-                              <span className="text-cyan-500/60 font-black text-[10px] flex-shrink-0">VS</span>
-                              <span
-                                className={`font-semibold ${
-                                  isCompleted ? 'text-white/30' : isNext ? 'text-white' : 'text-white/70'
-                                }`}
-                              >
+                              </p>
+                              <p className="text-[10px] text-cyan-500/60 font-bold my-0.5">vs</p>
+                              <p className={`text-xs font-semibold leading-tight truncate ${isCompleted ? 'text-white/30' : 'text-white/90'}`}>
                                 {match.team2.map(getName).join(' & ')}
-                              </span>
+                              </p>
                             </div>
                           ))}
                         </div>
@@ -378,104 +382,91 @@ export default function PadelTournament() {
               </div>
             )}
 
+            {/* Active match cards */}
             {matches.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
                 {matches.map((match) => (
                   <div
                     key={match.id}
                     onClick={() => setSelectedMatch(selectedMatch === match.id ? null : match.id)}
-                    className={`bg-white/5 backdrop-blur-md border-2 rounded-xl p-4 cursor-pointer transition-all ${
+                    className={`bg-white/5 border-2 rounded-2xl p-4 transition-colors ${
                       selectedMatch === match.id
                         ? 'border-cyan-400 bg-cyan-500/10'
-                        : 'border-cyan-500/20 hover:border-cyan-500/40'
+                        : 'border-cyan-500/20'
                     } ${match.completed ? 'opacity-70' : ''}`}
                   >
-                    <div className="mb-3 sm:mb-4">
-                      <div className="flex justify-between items-start gap-3">
-                        <div className="flex-1 min-w-0">
-                          {match.team1.map((p, i) => (
-                            <p key={i} className="text-cyan-300 font-semibold text-sm truncate">
-                              {p.name}
-                            </p>
-                          ))}
-                        </div>
-                        <span className="text-3xl sm:text-4xl font-black text-cyan-400 flex-shrink-0">
-                          {match.score1}
-                        </span>
+                    {/* Team 1 */}
+                    <div className="flex justify-between items-center gap-3 mb-3">
+                      <div className="flex-1 min-w-0">
+                        {match.team1.map((p, i) => (
+                          <p key={i} className="text-cyan-300 font-bold text-base leading-tight truncate">
+                            {p.name}
+                          </p>
+                        ))}
                       </div>
-                      {selectedMatch === match.id && !match.completed && (
-                        <div className="flex gap-2 mt-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              updateScore(match.id, 1, 1);
-                            }}
-                            className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 rounded-lg text-cyan-300 text-sm font-bold transition-all"
-                          >
-                            <Plus size={14} /> Add
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              updateScore(match.id, 1, -1);
-                            }}
-                            className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 rounded-lg text-red-300 text-sm font-bold transition-all"
-                          >
-                            <Minus size={14} /> Sub
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    <div className="border-t border-cyan-500/20 my-3 sm:my-4"></div>
-                    <div>
-                      <div className="flex justify-between items-start gap-3 mb-2">
-                        <div className="flex-1 min-w-0">
-                          {match.team2.map((p, i) => (
-                            <p key={i} className="text-cyan-300 font-semibold text-sm truncate">
-                              {p.name}
-                            </p>
-                          ))}
-                        </div>
-                        <span className="text-3xl sm:text-4xl font-black text-cyan-400 flex-shrink-0">
-                          {match.score2}
-                        </span>
-                      </div>
-                      {selectedMatch === match.id && !match.completed && (
-                        <div className="flex gap-2 mt-2">
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              updateScore(match.id, 2, 1);
-                            }}
-                            className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 rounded-lg text-cyan-300 text-sm font-bold transition-all"
-                          >
-                            <Plus size={14} /> Add
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              updateScore(match.id, 2, -1);
-                            }}
-                            className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 rounded-lg text-red-300 text-sm font-bold transition-all"
-                          >
-                            <Minus size={14} /> Sub
-                          </button>
-                        </div>
-                      )}
+                      <span className="text-4xl font-black text-cyan-400 flex-shrink-0 tabular-nums">
+                        {match.score1}
+                      </span>
                     </div>
                     {selectedMatch === match.id && !match.completed && (
+                      <div className="flex gap-2 mb-3">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); updateScore(match.id, 1, 1); }}
+                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3.5 bg-cyan-500/20 active:bg-cyan-500/40 border border-cyan-500/40 rounded-xl text-cyan-300 text-sm font-bold transition-colors"
+                        >
+                          <Plus size={16} /> Add
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); updateScore(match.id, 1, -1); }}
+                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3.5 bg-red-500/20 active:bg-red-500/40 border border-red-500/40 rounded-xl text-red-300 text-sm font-bold transition-colors"
+                        >
+                          <Minus size={16} /> Sub
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="border-t border-cyan-500/20 my-3"></div>
+
+                    {/* Team 2 */}
+                    <div className="flex justify-between items-center gap-3 mb-3">
+                      <div className="flex-1 min-w-0">
+                        {match.team2.map((p, i) => (
+                          <p key={i} className="text-cyan-300 font-bold text-base leading-tight truncate">
+                            {p.name}
+                          </p>
+                        ))}
+                      </div>
+                      <span className="text-4xl font-black text-cyan-400 flex-shrink-0 tabular-nums">
+                        {match.score2}
+                      </span>
+                    </div>
+                    {selectedMatch === match.id && !match.completed && (
+                      <div className="flex gap-2 mb-3">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); updateScore(match.id, 2, 1); }}
+                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3.5 bg-cyan-500/20 active:bg-cyan-500/40 border border-cyan-500/40 rounded-xl text-cyan-300 text-sm font-bold transition-colors"
+                        >
+                          <Plus size={16} /> Add
+                        </button>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); updateScore(match.id, 2, -1); }}
+                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3.5 bg-red-500/20 active:bg-red-500/40 border border-red-500/40 rounded-xl text-red-300 text-sm font-bold transition-colors"
+                        >
+                          <Minus size={16} /> Sub
+                        </button>
+                      </div>
+                    )}
+
+                    {selectedMatch === match.id && !match.completed && (
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          completeMatch(match.id);
-                        }}
-                        className="w-full mt-4 px-4 py-3 bg-green-500 hover:bg-green-400 rounded-lg text-white font-bold text-sm transition-all"
+                        onClick={(e) => { e.stopPropagation(); completeMatch(match.id); }}
+                        className="w-full px-4 py-4 bg-green-500 active:bg-green-400 rounded-xl text-white font-bold text-sm transition-colors"
                       >
                         Complete Match
                       </button>
                     )}
                     {match.completed && (
-                      <div className="w-full mt-4 px-4 py-2 bg-cyan-500/20 border border-cyan-500/30 rounded-lg text-center text-cyan-300 font-semibold text-sm">
+                      <div className="w-full px-4 py-2.5 bg-cyan-500/20 border border-cyan-500/30 rounded-xl text-center text-cyan-300 font-semibold text-sm">
                         Match Completed
                       </div>
                     )}
@@ -483,20 +474,18 @@ export default function PadelTournament() {
                 ))}
               </div>
             ) : (
-              <div className="bg-white/5 backdrop-blur-md border border-cyan-500/20 rounded-xl p-6 text-center">
-                <p className="text-cyan-300/60 mb-2">No matches generated yet</p>
-                <p className="text-white/40 text-xs sm:text-sm">
-                  Click "Generate Matches" to start the round
-                </p>
+              <div className="bg-white/5 border border-cyan-500/20 rounded-2xl p-8 text-center">
+                <p className="text-cyan-300/60 mb-1 font-semibold">No matches yet</p>
+                <p className="text-white/30 text-sm">Tap "Generate" to start the round</p>
               </div>
             )}
           </div>
 
           {/* Match History */}
           {matchHistory.length > 0 && (
-            <div className="bg-white/5 backdrop-blur-md border border-cyan-500/20 rounded-2xl p-4 sm:p-6">
-              <h3 className="text-lg font-bold text-cyan-300 mb-4 flex items-center gap-2">
-                <span className="w-2 h-2 bg-cyan-400 rounded-full"></span>
+            <div className="bg-white/5 border border-cyan-500/20 rounded-2xl p-4 sm:p-6">
+              <h3 className="text-base font-bold text-cyan-300 mb-3 flex items-center gap-2">
+                <span className="w-2 h-2 bg-cyan-400 rounded-full flex-shrink-0"></span>
                 Match History
               </h3>
               <div className="space-y-3 max-h-96 overflow-y-auto">
@@ -508,16 +497,13 @@ export default function PadelTournament() {
                     const winner = match.score1 > match.score2 ? 1 : 2;
                     const isEditing = historyEditId === actualIdx;
                     return (
-                      <div
-                        key={actualIdx}
-                        className="p-3 bg-white/5 rounded-lg border border-cyan-500/10"
-                      >
+                      <div key={actualIdx} className="p-3 bg-white/5 rounded-xl border border-cyan-500/10">
                         <div className="flex justify-between items-start mb-2">
-                          <p className="text-xs text-cyan-300/60">Round {match.round}</p>
+                          <p className="text-xs text-cyan-300/50 font-semibold">Round {match.round}</p>
                           {!isEditing && (
                             <button
                               onClick={() => editMatch(actualIdx)}
-                              className="p-1 hover:bg-white/10 rounded"
+                              className="p-1.5 active:bg-white/10 rounded-lg"
                             >
                               <Edit2 size={14} className="text-cyan-300" />
                             </button>
@@ -525,88 +511,65 @@ export default function PadelTournament() {
                         </div>
                         {isEditing ? (
                           <div className="space-y-3">
-                            <div className="flex-1">
-                              <p className="text-cyan-300 font-semibold mb-1 text-sm">
+                            <div>
+                              <p className="text-cyan-300 font-semibold mb-1.5 text-sm truncate">
                                 {match.team1.map((p) => p.name).join(' & ')}
                               </p>
                               <input
                                 type="number"
                                 value={historyEditScores.score1}
                                 onChange={(e) =>
-                                  setHistoryEditScores({
-                                    ...historyEditScores,
-                                    score1: parseInt(e.target.value) || 0,
-                                  })
+                                  setHistoryEditScores({ ...historyEditScores, score1: parseInt(e.target.value) || 0 })
                                 }
-                                className="w-full px-3 py-2 bg-white/10 border border-cyan-500/30 rounded-lg text-white text-sm outline-none focus:border-cyan-400"
+                                className="w-full px-3 py-3 bg-white/10 border border-cyan-500/30 rounded-xl text-white text-base outline-none focus:border-cyan-400"
                               />
                             </div>
-                            <div className="flex-1">
-                              <p className="text-cyan-300 font-semibold mb-1 text-sm">
+                            <div>
+                              <p className="text-cyan-300 font-semibold mb-1.5 text-sm truncate">
                                 {match.team2.map((p) => p.name).join(' & ')}
                               </p>
                               <input
                                 type="number"
                                 value={historyEditScores.score2}
                                 onChange={(e) =>
-                                  setHistoryEditScores({
-                                    ...historyEditScores,
-                                    score2: parseInt(e.target.value) || 0,
-                                  })
+                                  setHistoryEditScores({ ...historyEditScores, score2: parseInt(e.target.value) || 0 })
                                 }
-                                className="w-full px-3 py-2 bg-white/10 border border-cyan-500/30 rounded-lg text-white text-sm outline-none focus:border-cyan-400"
+                                className="w-full px-3 py-3 bg-white/10 border border-cyan-500/30 rounded-xl text-white text-base outline-none focus:border-cyan-400"
                               />
                             </div>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => saveMatchEdit(actualIdx)}
-                                className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-green-500/20 hover:bg-green-500/30 border border-green-500/40 rounded-lg text-green-300 text-sm font-bold transition-all"
+                                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3 bg-green-500/20 active:bg-green-500/40 border border-green-500/40 rounded-xl text-green-300 text-sm font-bold transition-colors"
                               >
-                                <Check size={14} /> Save
+                                <Check size={15} /> Save
                               </button>
                               <button
                                 onClick={cancelMatchEdit}
-                                className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 rounded-lg text-red-300 text-sm font-bold transition-all"
+                                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3 bg-red-500/20 active:bg-red-500/40 border border-red-500/40 rounded-xl text-red-300 text-sm font-bold transition-colors"
                               >
-                                <X size={14} /> Cancel
+                                <X size={15} /> Cancel
                               </button>
                             </div>
                           </div>
                         ) : (
                           <>
-                            <div className="flex justify-between items-center text-sm mb-2">
-                              <p
-                                className={`font-semibold ${
-                                  winner === 1 ? 'text-cyan-300' : 'text-white/60'
-                                }`}
-                              >
+                            <div className="flex items-center justify-between gap-2 mb-1.5">
+                              <p className={`font-semibold text-sm truncate flex-1 min-w-0 ${winner === 1 ? 'text-cyan-300' : 'text-white/50'}`}>
                                 {match.team1.map((p) => p.name).join(' & ')}
                               </p>
-                              <div className="flex gap-2">
-                                <span
-                                  className={`font-black ${
-                                    winner === 1 ? 'text-cyan-400' : 'text-white/40'
-                                  }`}
-                                >
-                                  {match.score1}
-                                </span>
-                                <span className="text-white/20">-</span>
-                                <span
-                                  className={`font-black ${
-                                    winner === 2 ? 'text-cyan-400' : 'text-white/40'
-                                  }`}
-                                >
-                                  {match.score2}
-                                </span>
-                              </div>
+                              <span className={`font-black text-base tabular-nums flex-shrink-0 ${winner === 1 ? 'text-cyan-400' : 'text-white/30'}`}>
+                                {match.score1}
+                              </span>
                             </div>
-                            <p
-                              className={`font-semibold text-sm ${
-                                winner === 2 ? 'text-cyan-300' : 'text-white/60'
-                              }`}
-                            >
-                              {match.team2.map((p) => p.name).join(' & ')}
-                            </p>
+                            <div className="flex items-center justify-between gap-2">
+                              <p className={`font-semibold text-sm truncate flex-1 min-w-0 ${winner === 2 ? 'text-cyan-300' : 'text-white/50'}`}>
+                                {match.team2.map((p) => p.name).join(' & ')}
+                              </p>
+                              <span className={`font-black text-base tabular-nums flex-shrink-0 ${winner === 2 ? 'text-cyan-400' : 'text-white/30'}`}>
+                                {match.score2}
+                              </span>
+                            </div>
                           </>
                         )}
                       </div>
@@ -620,6 +583,8 @@ export default function PadelTournament() {
 
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
+        * { -webkit-tap-highlight-color: transparent; }
+        input, button { touch-action: manipulation; }
       `}</style>
     </div>
   );
