@@ -55,23 +55,51 @@ function fireConfetti() {
   confetti({ particleCount: 120, spread: 80, origin: { y: 0.55 }, colors: ['#22d3ee','#ffffff','#0ea5e9','#67e8f9'] });
 }
 
-// Score keyboard 0–9
+// Score keyboard — multi-digit with backspace
 function ScoreKeyboard({ matchId, team, currentScore, onSet }) {
+  const [input, setInput] = useState(currentScore === 0 ? '0' : String(currentScore));
+
+  const handleDigit = (e, n) => {
+    e.stopPropagation();
+    const next = input === '0' ? String(n) : input + String(n);
+    setInput(next);
+    onSet(matchId, team, parseInt(next, 10) || 0);
+    playSound('point');
+    vibrate(20);
+  };
+
+  const handleErase = (e) => {
+    e.stopPropagation();
+    const next = input.length <= 1 ? '0' : input.slice(0, -1);
+    setInput(next);
+    onSet(matchId, team, parseInt(next, 10) || 0);
+    vibrate(20);
+  };
+
+  const btnBase = 'py-3 rounded-xl text-sm font-black transition-colors active:scale-95';
+
   return (
-    <div className="grid grid-cols-5 gap-1.5 my-2">
-      {[0,1,2,3,4,5,6,7,8,9].map((n) => (
-        <button
-          key={n}
-          onClick={(e) => { e.stopPropagation(); onSet(matchId, team, n); }}
-          className={`py-2.5 rounded-xl text-sm font-black transition-colors ${
-            currentScore === n
-              ? 'bg-cyan-400 text-white shadow-md shadow-cyan-400/40'
-              : 'bg-white/10 active:bg-white/25 text-white/80'
-          }`}
-        >
-          {n}
-        </button>
-      ))}
+    <div className="my-2 space-y-1.5">
+      <div className="grid grid-cols-5 gap-1.5">
+        {[0,1,2,3,4].map((n) => (
+          <button key={n} onClick={(e) => handleDigit(e, n)}
+            className={`${btnBase} ${currentScore === n && input === String(n) ? 'bg-cyan-400 text-white shadow-md shadow-cyan-400/40' : 'bg-white/10 active:bg-white/25 text-white/80'}`}>
+            {n}
+          </button>
+        ))}
+      </div>
+      <div className="grid grid-cols-5 gap-1.5">
+        {[5,6,7,8,9].map((n) => (
+          <button key={n} onClick={(e) => handleDigit(e, n)}
+            className={`${btnBase} ${currentScore === n && input === String(n) ? 'bg-cyan-400 text-white shadow-md shadow-cyan-400/40' : 'bg-white/10 active:bg-white/25 text-white/80'}`}>
+            {n}
+          </button>
+        ))}
+      </div>
+      <button onClick={handleErase}
+        className={`${btnBase} w-full bg-red-500/20 active:bg-red-500/40 text-red-300 tracking-widest`}>
+        ⌫ Erase
+      </button>
     </div>
   );
 }
@@ -131,8 +159,6 @@ export default function PadelTournament() {
   };
 
   const setScore = (matchId, team, value) => {
-    playSound('point');
-    vibrate(20);
     setMatches(matches.map((m) => {
       if (m.id !== matchId) return m;
       return { ...m, score1: team === 1 ? value : m.score1, score2: team === 2 ? value : m.score2 };
