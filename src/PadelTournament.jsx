@@ -1,5 +1,25 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { RotateCcw, Play, Plus, Minus, Edit2, Check, X } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { RotateCcw, Play, Plus, Minus, Edit2, Check, X, CalendarDays, ChevronDown, ChevronUp } from 'lucide-react';
+
+// 14-round doubles round robin for 8 players (1-indexed IDs)
+// Every player partners with every other player at least once
+// Every player faces every other player at least once
+const FULL_SCHEDULE = [
+  [{ team1: [1,5], team2: [7,8] }, { team1: [2,3], team2: [4,6] }],
+  [{ team1: [4,7], team2: [6,8] }, { team1: [1,2], team2: [3,5] }],
+  [{ team1: [3,4], team2: [5,7] }, { team1: [2,6], team2: [1,8] }],
+  [{ team1: [1,6], team2: [4,5] }, { team1: [3,7], team2: [2,8] }],
+  [{ team1: [5,6], team2: [2,7] }, { team1: [1,4], team2: [3,8] }],
+  [{ team1: [4,8], team2: [2,5] }, { team1: [6,7], team2: [1,3] }],
+  [{ team1: [1,7], team2: [2,4] }, { team1: [3,6], team2: [5,8] }],
+  [{ team1: [1,5], team2: [4,6] }, { team1: [2,3], team2: [7,8] }],
+  [{ team1: [4,7], team2: [3,5] }, { team1: [1,2], team2: [6,8] }],
+  [{ team1: [3,4], team2: [1,8] }, { team1: [2,6], team2: [5,7] }],
+  [{ team1: [1,6], team2: [2,8] }, { team1: [3,7], team2: [4,5] }],
+  [{ team1: [5,6], team2: [3,8] }, { team1: [1,4], team2: [2,7] }],
+  [{ team1: [4,8], team2: [1,3] }, { team1: [6,7], team2: [2,5] }],
+  [{ team1: [1,7], team2: [5,8] }, { team1: [3,6], team2: [2,4] }],
+];
 
 export default function PadelTournament() {
   const [players, setPlayers] = useState([
@@ -20,6 +40,9 @@ export default function PadelTournament() {
   const [editNames, setEditNames] = useState(false);
   const [historyEditId, setHistoryEditId] = useState(null);
   const [historyEditScores, setHistoryEditScores] = useState({ score1: 0, score2: 0 });
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+
+  const getName = (id) => players.find((p) => p.id === id)?.name ?? `Player ${id}`;
 
   const defaultPlayers = () =>
     Array.from({ length: 8 }, (_, i) => ({
@@ -38,6 +61,7 @@ export default function PadelTournament() {
     setEditNames(false);
     setHistoryEditId(null);
     setHistoryEditScores({ score1: 0, score2: 0 });
+    setScheduleOpen(false);
   };
 
   const generateMatches = () => {
@@ -248,23 +272,111 @@ export default function PadelTournament() {
                   </p>
                 )}
               </div>
-              {matches.length === 0 ? (
+              <div className="flex w-full sm:w-auto gap-2">
+                {/* Schedule toggle button */}
                 <button
-                  onClick={generateMatches}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 rounded-xl text-white font-bold text-sm transition-all shadow-lg shadow-cyan-500/30"
+                  onClick={() => setScheduleOpen((o) => !o)}
+                  className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all border ${
+                    scheduleOpen
+                      ? 'bg-cyan-500/25 border-cyan-400/60 text-cyan-200'
+                      : 'bg-white/5 border-cyan-500/30 text-cyan-300 hover:bg-white/10'
+                  }`}
                 >
-                  <Play size={18} />
-                  Generate Matches
+                  <CalendarDays size={16} />
+                  <span>Schedule</span>
+                  {scheduleOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </button>
-              ) : allCompleted ? (
-                <button
-                  onClick={finishRound}
-                  className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-400 rounded-xl text-white font-bold text-sm transition-all shadow-lg shadow-green-500/30"
-                >
-                  Next Round
-                </button>
-              ) : null}
+
+                {matches.length === 0 ? (
+                  <button
+                    onClick={generateMatches}
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-400 rounded-xl text-white font-bold text-sm transition-all shadow-lg shadow-cyan-500/30"
+                  >
+                    <Play size={18} />
+                    Generate Matches
+                  </button>
+                ) : allCompleted ? (
+                  <button
+                    onClick={finishRound}
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-400 rounded-xl text-white font-bold text-sm transition-all shadow-lg shadow-green-500/30"
+                  >
+                    Next Round
+                  </button>
+                ) : null}
+              </div>
             </div>
+
+            {/* Schedule dropdown panel */}
+            {scheduleOpen && (
+              <div className="bg-white/5 backdrop-blur-md border border-cyan-500/20 rounded-2xl p-4 sm:p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-bold text-cyan-300 flex items-center gap-2">
+                    <span className="w-2 h-2 bg-cyan-400 rounded-full"></span>
+                    Full Match Schedule
+                  </h3>
+                  <span className="text-xs text-cyan-300/50">14 rounds · all pairs covered</span>
+                </div>
+                <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
+                  {FULL_SCHEDULE.map((roundMatches, idx) => {
+                    const roundNum = idx + 1;
+                    const isCompleted = roundNum <= round;
+                    const isNext = roundNum === round + 1;
+
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-xl border p-3 transition-all ${
+                          isCompleted
+                            ? 'bg-white/3 border-cyan-500/10 opacity-40'
+                            : isNext
+                            ? 'bg-cyan-500/15 border-cyan-400/50'
+                            : 'bg-white/5 border-cyan-500/10'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span
+                            className={`text-xs font-bold ${
+                              isNext ? 'text-cyan-300' : isCompleted ? 'text-cyan-300/40' : 'text-cyan-300/70'
+                            }`}
+                          >
+                            Round {roundNum}
+                          </span>
+                          {isNext && (
+                            <span className="text-[10px] px-2 py-0.5 bg-cyan-400/20 border border-cyan-400/40 rounded-full text-cyan-300 font-bold tracking-wide">
+                              NEXT UP
+                            </span>
+                          )}
+                          {isCompleted && (
+                            <span className="text-[10px] text-cyan-300/30">done</span>
+                          )}
+                        </div>
+                        <div className="space-y-1.5">
+                          {roundMatches.map((match, mIdx) => (
+                            <div key={mIdx} className="flex items-center gap-2 text-sm">
+                              <span
+                                className={`font-semibold ${
+                                  isCompleted ? 'text-white/30' : isNext ? 'text-white' : 'text-white/70'
+                                }`}
+                              >
+                                {match.team1.map(getName).join(' & ')}
+                              </span>
+                              <span className="text-cyan-500/60 font-black text-[10px] flex-shrink-0">VS</span>
+                              <span
+                                className={`font-semibold ${
+                                  isCompleted ? 'text-white/30' : isNext ? 'text-white' : 'text-white/70'
+                                }`}
+                              >
+                                {match.team2.map(getName).join(' & ')}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {matches.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
