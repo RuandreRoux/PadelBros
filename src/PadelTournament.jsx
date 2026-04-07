@@ -552,6 +552,12 @@ export default function PadelTournament() {
         </div>
       </div>
 
+      {/* Signature */}
+      <p className="fixed bottom-4 right-4 text-white/20 text-[11px] font-semibold pointer-events-none select-none"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        Created by Ruandre Roux
+      </p>
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
         * { -webkit-tap-highlight-color: transparent; }
