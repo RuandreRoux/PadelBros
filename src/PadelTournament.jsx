@@ -24,6 +24,11 @@ const EMOJIS = ['🎾','🔥','👑','💀','⚡','🦁','🐺','🎯','💪','�
 
 const DEFAULT_EMOJIS = ['🎾','🔥','👑','💀','⚡','🦁','🐺','🎯'];
 
+// --- Haptic feedback ---
+function vibrate(pattern) {
+  try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (_) {}
+}
+
 // --- Sound effects via Web Audio API ---
 function playSound(type) {
   try {
@@ -114,20 +119,26 @@ export default function PadelTournament() {
   };
 
   const generateMatches = () => {
-    const shuffled = [...players];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    setMatches([
-      { id: Math.random(), round: round + 1, team1: [shuffled[0], shuffled[1]], team2: [shuffled[2], shuffled[3]], score1: 0, score2: 0, completed: false },
-      { id: Math.random(), round: round + 1, team1: [shuffled[4], shuffled[5]], team2: [shuffled[6], shuffled[7]], score1: 0, score2: 0, completed: false },
-    ]);
+    const scheduleRound = FULL_SCHEDULE[round];
+    if (!scheduleRound) return; // all 14 rounds done
+    const toPlayer = (id) => players.find((p) => p.id === id);
+    setMatches(
+      scheduleRound.map((def) => ({
+        id: Math.random(),
+        round: round + 1,
+        team1: def.team1.map(toPlayer),
+        team2: def.team2.map(toPlayer),
+        score1: 0,
+        score2: 0,
+        completed: false,
+      }))
+    );
     setSelectedMatch(null);
   };
 
   const updateScore = (matchId, team, pts) => {
     playSound('point');
+    vibrate(30);
     setMatches(matches.map((m) => {
       if (m.id !== matchId) return m;
       return {
@@ -154,6 +165,7 @@ export default function PadelTournament() {
     setMatches(matches.map((m) => (m.id === matchId ? updated : m)));
     setSelectedMatch(null);
     playSound('complete');
+    vibrate([60, 40, 80, 40, 120]);
     fireConfetti();
   };
 
@@ -215,7 +227,7 @@ export default function PadelTournament() {
         style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)' }}
       >
         <div className="px-4 py-3 sm:px-6 sm:py-5" style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
-          <div className="flex justify-between items-center gap-4">
+          <div className="flex justify-between items-center gap-4 mb-3">
             <div className="flex-1">
               <h1 className="text-3xl sm:text-4xl font-black text-cyan-400" style={{ letterSpacing: '0.15em' }}>
                 PADEL
@@ -229,6 +241,21 @@ export default function PadelTournament() {
               <RotateCcw size={17} className="flex-shrink-0" />
               <span className="hidden sm:inline">RESET</span>
             </button>
+          </div>
+          {/* Tournament progress bar */}
+          <div>
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-cyan-300/60 text-xs font-semibold">
+                {round >= 14 ? '🏆 Tournament Complete!' : `Round ${round + 1} of 14`}
+              </span>
+              <span className="text-cyan-300/40 text-xs">{Math.round((round / 14) * 100)}%</span>
+            </div>
+            <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-cyan-400 rounded-full transition-all duration-500"
+                style={{ width: `${(round / 14) * 100}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -326,12 +353,12 @@ export default function PadelTournament() {
                   <CalendarDays size={16} />
                   {scheduleOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </button>
-                {matches.length === 0 ? (
+                {matches.length === 0 && round < 14 ? (
                   <button
                     onClick={generateMatches}
                     className="flex items-center gap-1.5 px-4 py-2.5 bg-cyan-500 active:bg-cyan-400 rounded-xl text-white font-bold text-sm transition-colors shadow-lg shadow-cyan-500/30"
                   >
-                    <Play size={16} /> Generate
+                    <Play size={16} /> Round {round + 1}
                   </button>
                 ) : allCompleted ? (
                   <button
