@@ -279,14 +279,21 @@ export default function PadelTournament() {
 
             <div className="flex gap-2 mt-3">
               <button
-                onClick={() => setEditNames(!editNames)}
+                onClick={() => {
+                  if (editNames) {
+                    shufflePlayers();
+                    setEditNames(false);
+                  } else {
+                    setEditNames(true);
+                  }
+                }}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-colors ${
                   editNames
                     ? 'bg-cyan-400 active:bg-cyan-300 text-white shadow-lg shadow-cyan-500/40'
                     : 'bg-cyan-500/10 active:bg-cyan-500/25 border border-cyan-500/30 text-cyan-300'
                 }`}
               >
-                {editNames ? <><Check size={15} /> Done — Save Names</> : 'Edit Names'}
+                {editNames ? <><Shuffle size={15} /> Shuffle & Done</> : 'Edit Names'}
               </button>
               <button
                 onClick={shareToWhatsApp}
@@ -310,16 +317,6 @@ export default function PadelTournament() {
                     />
                   </div>
                 ))}
-                {/* Shuffle button — only before tournament starts */}
-                {round === 0 && matches.length === 0 && (
-                  <button
-                    onClick={shufflePlayers}
-                    className="w-full flex items-center justify-center gap-2 py-3 mt-1 bg-cyan-500/15 active:bg-cyan-500/30 border border-cyan-500/30 rounded-xl text-cyan-300 font-semibold text-sm transition-colors"
-                  >
-                    <Shuffle size={15} />
-                    Shuffle Player Order
-                  </button>
-                )}
               </div>
             )}
           </div>
@@ -343,6 +340,7 @@ export default function PadelTournament() {
                   }`}
                 >
                   <CalendarDays size={16} />
+                  <span>Schedule</span>
                   {scheduleOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </button>
                 {matches.length === 0 && round < 14 ? (
