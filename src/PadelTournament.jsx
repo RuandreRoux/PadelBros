@@ -386,6 +386,9 @@ export default function PadelTournament() {
                         <div className="grid grid-cols-2 gap-2">
                           {roundMatches.map((match, mIdx) => (
                             <div key={mIdx} className={`rounded-lg p-2 ${isNext ? 'bg-white/10' : 'bg-white/5'}`}>
+                              <p className={`text-[10px] font-black mb-1 ${isCompleted ? 'text-cyan-400/30' : 'text-cyan-400/70'}`}>
+                                COURT {mIdx + 1}
+                              </p>
                               <p className={`text-xs font-semibold leading-snug truncate ${isCompleted ? 'text-white/30' : 'text-white/90'}`}>
                                 {match.team1.map(getName).join(' & ')}
                               </p>
@@ -406,7 +409,7 @@ export default function PadelTournament() {
             {/* Active match cards */}
             {matches.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
-                {matches.map((match) => (
+                {matches.map((match, courtIdx) => (
                   <div
                     key={match.id}
                     onClick={() => setSelectedMatch(selectedMatch === match.id ? null : match.id)}
@@ -414,6 +417,10 @@ export default function PadelTournament() {
                       selectedMatch === match.id ? 'border-cyan-400 bg-cyan-500/10' : 'border-cyan-500/20'
                     } ${match.completed ? 'opacity-70' : ''}`}
                   >
+                    {/* Court label */}
+                    <p className="text-[11px] font-black text-cyan-400/70 mb-2 tracking-widest">
+                      COURT {courtIdx + 1}
+                    </p>
                     {/* Team 1 */}
                     <div className="flex justify-between items-center gap-3">
                       <div className="flex-1 min-w-0">
