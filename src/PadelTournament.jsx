@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import confetti from 'canvas-confetti';
-import { RotateCcw, Play, Plus, Minus, Edit2, Check, X, CalendarDays, ChevronDown, ChevronUp } from 'lucide-react';
+import { RotateCcw, Play, Plus, Minus, Edit2, Check, X, CalendarDays, ChevronDown, ChevronUp, Share2 } from 'lucide-react';
 
 // 14-round doubles round robin for 8 players (1-indexed IDs)
 const FULL_SCHEDULE = [
@@ -212,6 +212,18 @@ export default function PadelTournament() {
   const sortedPlayers = useMemo(() => [...players].sort((a, b) => b.points - a.points), [players]);
   const allCompleted = matches.length > 0 && matches.every((m) => m.completed);
 
+  const shareToWhatsApp = () => {
+    const status = round >= 14 ? '🏆 Final Standings' : `Round ${round} of 14`;
+    const lines = [
+      `🎾 Padel Bros — ${status}`,
+      '─────────────────',
+      ...sortedPlayers.map((p, i) => `${i + 1}. ${p.emoji} ${p.name}  ${p.points}pts`),
+      '',
+      `${matchHistory.length} match${matchHistory.length !== 1 ? 'es' : ''} played`,
+    ];
+    window.open(`https://wa.me/?text=${encodeURIComponent(lines.join('\n'))}`, '_blank');
+  };
+
   return (
     <div
       className="min-h-screen"
@@ -284,12 +296,21 @@ export default function PadelTournament() {
               ))}
             </div>
 
-            <button
-              onClick={() => { setEditNames(!editNames); setEmojiPickerFor(null); }}
-              className="w-full mt-3 px-4 py-3 bg-cyan-500/10 active:bg-cyan-500/25 border border-cyan-500/30 rounded-xl text-cyan-300 font-semibold text-sm transition-colors"
-            >
-              {editNames ? 'Done Editing' : 'Edit Player Names & Emojis'}
-            </button>
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => { setEditNames(!editNames); setEmojiPickerFor(null); }}
+                className="flex-1 px-4 py-3 bg-cyan-500/10 active:bg-cyan-500/25 border border-cyan-500/30 rounded-xl text-cyan-300 font-semibold text-sm transition-colors"
+              >
+                {editNames ? 'Done Editing' : 'Edit Names'}
+              </button>
+              <button
+                onClick={shareToWhatsApp}
+                className="flex items-center gap-2 px-4 py-3 bg-green-500/15 active:bg-green-500/30 border border-green-500/30 rounded-xl text-green-400 font-semibold text-sm transition-colors flex-shrink-0"
+              >
+                <Share2 size={15} />
+                Share
+              </button>
+            </div>
 
             {editNames && (
               <div className="mt-3 space-y-2">
